@@ -76,8 +76,10 @@ let result = addThree(5);
 
 ```reason Reason (Currying)
 let add = (a, b) => a + b;
-let addThree = add(3)
+let addThree = add(3);
+
 let result = addThree(5);
+let result2 = add(3)(5)
 ----
 * > Currying is a built-in feature of Reason
 2 > Doing this in JavaScript would result in NaN
@@ -116,8 +118,8 @@ let friends = getId()
 ---
 
 ```reason Piping
-let takeTwo = (data, second);
-let takeAnotherTwo = (data, third);
+let takeTwo = (data, second) => {};
+let takeAnotherTwo = (data, third) => {};
 
 let second = "second"
 let third = "third"
@@ -133,8 +135,8 @@ let result = "data"
 ---
 
 ```reason Piping
-let takeTwo = (second, data);
-let takeAnotherTwo = (third, data);
+let takeTwo = (second, data) => {};
+let takeAnotherTwo = (third, data) => {};
 
 let result = "data"
   |> takeTwo(second)
@@ -150,11 +152,11 @@ let result = "data"
 type person = {
   id: string,
   name: string,
-  age: int,
+  age: int=?,
 };
 
 let gary: person = {id: 1, name: "Gary", 12};
-let ash = {id: 2, name: "Ash", 10};
+let ash = {id: 2, name: "Ash", age: 10};
 ----
 * > "semi-equivalent" of JS objects
 1,2,3,4 > type declarations is similar to TypeScript interfaces!
@@ -209,9 +211,6 @@ if (!isAdmin) {
 export default Layout;
 
 ```reason Pattern Matching
-let { first, second } = getRange();
-let [ head, ...tail ] = arr;
-
 let message =
   switch (person)
   | Free => "Free User"
@@ -220,15 +219,19 @@ let message =
   | Super => "Super Admin";
 
 let reducer =
+  switch (action)
   | Edit => {...state, isEditing: true}
   | Cancel => {...state, isEditing: false}
   | Save(text) => { text, isEditing: false };
+
+let { first, second } = getRange();
+let [ head, ...tail ] = arr;
 ----
 * > Reason heavily utilizes patter matching instead of if/else or switch/cases
-1,2 > Destructuring is also an application of pattern matching
-4,5,6,7,8,9 > Pattern matching is much cleaner compared to if/else
-11,12,13,14 > Reducer functions also utilizes pattern matching
-14 > "text" is the payload
+1,2,3,4,5,6 > Pattern matching is much cleaner compared to if/else
+8,9,10,11,12 > Reducer functions also utilizes pattern matching
+12 > "text" is the payload
+14,15 > Destructuring is also an application of pattern matching
 ```
 
 ---
@@ -368,7 +371,6 @@ let make = () =>
 6 > Since Reason is strongly types, even the React children must be typed
 8 > JSX props can be punned
 9,10 > Typing the event object before passing the value to setText
-* > This is the entire React file!!! 😲
 ```
 
 ---
@@ -427,6 +429,9 @@ let make = () => {
 10 > _ serves as catch-all
 ---
 
+export default Layout
+
+
 ```reason Module System
 [@react.component]
 let (text, setText) = React.useState(() => "Hello Reason React!");
@@ -444,9 +449,54 @@ let make = () =>
 * > Layout.re
 * > All Reason modules are "global"
 7 > All declared component props must be passed down
+* > This is the entire React file!!! 😲
+
 ````
 
 ---
+
+export default Layout;
+
+```reason Styling using bs-css
+module Styles = {
+  open Css;
+
+  let card = style([
+    display(flexBox),
+    flexDirection(column),
+    alignItems(stretch),
+    backgroundColor(white),
+    boxShadow(Shadow.box(~y=px(3), ~blur=px(5), rgba(0, 0, 0, 0.3))),
+    unsafe("-webkit-overflow-scrolling", "touch"),
+  ]);
+
+  let title = style([
+    fontSize(rem(1.5)),
+  ]);
+
+  let actionButton = disabled =>
+    style([
+      background(disabled ? darkgray : white),
+      color(black),
+      border(px(1), solid, black),
+      borderRadius(px(3)),
+    ])
+};
+
+<div className=Styles.card>
+  <h1 className=Styles.title> (ReasonReact.stringToElement("Hello")) </h1>
+  <button className=Styles.actionButton(false)>
+</div>
+----
+* > Styling using bs-css
+2 > import the values inside Css for use inside the file
+4,5,6,7,8,9,10,11 > CSS is typed!!! 😎
+26,27,28,29 > Usage similar to how it's done in React Native
+```
+
+---
+
+export default Layout;
 
 ```reason Using React component from npm
 module Input = {
@@ -490,6 +540,8 @@ export default Split;
 
 ---
 
+export default Layout;
+
 ```s Install GraphQL Client
 yarn add reason-urql
 yarn add reason-relay
@@ -498,6 +550,8 @@ yarn add reason-apollo
 
 ---
 
+export default Layout;
+
 ```s Install Graphql PPX
 yarn add graphql_ppx -D
 yarn send-introspection-query http://my-api.example.com/api
@@ -505,11 +559,15 @@ yarn send-introspection-query http://my-api.example.com/api
 
 ---
 
+export default Layout;
+
 ## Missing Variables
 
 ![missing_variables](https://raw.githubusercontent.com/mhallin/graphql_ppx/master/doc/missing_variables.gif)
 
 ---
+
+export default Layout;
 
 ## Missing Fields
 
@@ -517,11 +575,15 @@ yarn send-introspection-query http://my-api.example.com/api
 
 ---
 
+export default Layout;
+
 ## Misspelled Fields
 
 ![misspelled_fields](https://raw.githubusercontent.com/mhallin/graphql_ppx/master/doc/misspelled_field.gif)
 
 ---
+
+export default Layout;
 
 ```reason
 [@bs.val] external apiUrl: string = "process.env.API_DEV";
@@ -539,6 +601,8 @@ ReactDOMRe.renderToElementWithId(
 ```
 
 ---
+
+export default Layout;
 
 ```reason GraphQL Query
 module ListPokemon = [%graphql
@@ -583,7 +647,7 @@ let make = () => {
 }
 ----
 * > Making graphql is made easy in Reason
-3,4 > Making is straightforward
+3,4 > Making a query is straightforward
 6,7,8,9,10 > Handling data from query response is made simple with pattern matching
 12,13 > option type returns either None or Some('a)
 
@@ -671,6 +735,6 @@ Thank you! 😌
 
 ---
 
-Question? 🤔
+Questions? 🤔
 
 ---
